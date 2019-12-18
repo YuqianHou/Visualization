@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		.tooltip {
+			position: absolute;
+			width: 120px;
+			height: auto;
+			font-size: 14px;
+			text-align: center;
+			border: 1px solid #333;
+			background-color: #fff;
+			border-radius: 4px;
+		}
+	</style>
+</head>
+<body>
+	<div class="box"></div>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script type="text/javascript">
+
+		let svg = d3.select('.box').append('svg')
+			.attr('width', '400')
+			.attr('height', '400')
+		
+		let data = [
+			[ 'Services', 52.1570193361283 ],
+			[ 'Industry(including construction)', 40.6527866250439 ],
+			[ 'Manufacturing', 29.4143736126299 ]
+		]
+
+		let draw = (function (data) {
+			/* ----------- drag start -----------*/
+			let limit = 50
+			let toRemove = false
+			let startX = null
+			let startY = null
+			let drag = d3.behavior.drag()
+				.origin(null)
+				.on('dragstart', function (d) {
+					startX = d.dx
+					startY = d.dy
+					toRemove = false
+				})
+				.on('drag', function (d) {
+					let _this = d3.select(this)
+					d.dx += d3.event.dx
+					d.dy += d3.event.dy
+					_this.attr('transform', `translate(${ d.dx }, ${ d.dy })`)
+					if ((Math.abs(d.dx - startX) > limit) || (Math.abs(d.dy - startY) > limit)) {
+						toRemove = true
+						_this.style('opacity', 0.5)
+					} else {
+						toRemove = false
+						_this.style('opacity', 1)
+					}
+				})
+				.on('dragend', function (d) {
+					let _this = d3.select(this)
+					if (toRemove) {
+						let index = data.findIndex(item => item[1] === d.data[1])
+						data.splice(index, 1)
+						draw(data, svg)
+					} else {
+						let transition = _this.transition().duration(300)
+						d.dx = startX
+						d.dy = startY
+						transition.attr('transform', `translate(${ d.dx }, ${ d.dy })`)
+						_this.style('opacity', 1)
+					}
+				})
+			/* ----------- drag end -----------*/
+			let tooltip = null
+			let color = d3.scale.category20()
+
+			return function (data, svg, width = 400, height = 400) {
+				function reset () {
+					svg.selectAll('g').remove()
+				}
+				reset()
+				let pie = d3.layout.pie().value(d => d[1])
+				let pieData = pie(data)
+				let outerRadius = width / 3
+				let innerRadius = 0
+				let arc = d3.svg.arc()
+					.innerRadius(innerRadius)
+					.outerRadius(outerRadius)
+
+				if (!tooltip) {
+					tooltip = d3.select('body')
+						.append('div')
+						.attr('class', 'tooltip')
+						.style('opacity', 0.0)
+				} else {
+					tooltip.style('opacity', 0.0)
+				}
+
+				let arcsUpdate = svg.selectAll('g').data(pieData)
+				let arcsExit = arcsUpdate.exit()
+				let arcsEnter = arcsUpdate.enter()
+				let newArcs = arcsEnter.append('g')
+					.each(d => {
+						d.dx = width / 2
+						d.dy = height / 2
+					})
+					.attr('transform', `translate(${ width / 2 }, ${ height / 2 })`)
+					.style('cursor', 'move')
+					.call(drag)
+				newArcs.append('path')
+					.attr('fill', (d, i) => color(i))
+					.attr('d', d => arc(d))
+					.on('mousemove', function (d) {
+						tooltip.text(d.data[0])
+							.style('left', `${ d3.event.x }px`)
+							.style('top', `${ d3.event.y + 20 }px`)
+							.style('opacity', 1)
+					})
+					.on('mouseleave', function (d) {
+						tooltip.style('opacity', 0)
+					})
+
+				newArcs.append('text')
+					.attr('transform', d => {
+						let x = arc.centroid(d)[0] * 1.4
+						let y = arc.centroid(d)[1] * 1.4
+						return `translate(${ x }, ${ y })`
+					})
+					.attr('text-anchor', 'middle')
+					.text(d => {
+						let percent = Number(d.value) /
+							d3.sum(data, d => d[1]) * 100
+						return percent.toFixed(1) + '%'
+					})
+				arcsExit.remove()
+			}
+		}([...data]))
+
+		draw(data, svg)
+
+	</script>
+</body>
+</html>

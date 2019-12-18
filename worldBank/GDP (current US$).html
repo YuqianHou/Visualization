@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+   </head>
+   <body style="height: 100%; margin: 0">
+       <div id="container" style="height: 100%"></div>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+       <script type="text/javascript">
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom);
+var app = {};
+option = null;
+option = {
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['1960','1961','1962','1963','1964','1965','1966','1967', '1968','1969','1970','1971','1972','1973','1974','1975', '1976','1977','1978','1979','1980','1981','1982','1983','1984','1985','1986','1987','1988','1989','1990','1991','1992','1993','1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009', '2010','2011','2012','2013','2014','2015','2016','2017','2018']
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        data: [59716467625.3148,50056868957.6732,47209359005.6056,50706799902.5103,59708343488.5043,70436266146.7219,76720285969.6157,72881631326.6715,70846535055.6503,79705906247.4612,92602973434.0726,99800958648.1436,113687586299.051,138544284708.957,144182133387.722,163431551779.761,153940455341.506,174938098826.569,149540752829.268,178280594413.043,191149211575,195866382432.54,205089699858.779,230686747153.257,259946510957.143,309488028132.653,300758100107.246,272972974764.574,312353631207.819,347768051311.741,360857912565.966,383373318083.624,426915712711.146,444731282436.762,564324670005.917,734547898220.508,863746717503.789,961603952951.82,1029043097554.08,1093997267271.06,1211346869605.24,1339395718865.3,1470550015081.55,1660287965662.68,1955347004963.27,2285965892360.54,2752131773355.16,3550342425238.25,4594306848763.08,5101702432883.45,6087164527421.24,7551500425597.77,8532230724141.76,9570405758739.79,10438529153237.6,11015542352468.9,11137945669350.6,12143491448186.1,13608151864637.9],
+        type: 'line',
+        areaStyle: {}
+    }]
+};
+;
+if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+       </script>
+   </body>
+</html>
